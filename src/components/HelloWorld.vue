@@ -65,7 +65,7 @@ function isUrl(url: string) {
 
 function prepareUrl(url: string) {
   let u = url;
-  if (!url.includes('http://') || !url.includes('https://')) {
+  if (!url.includes('http://') && !url.includes('https://')) {
     u = `http:///${url}`;
   }
 
