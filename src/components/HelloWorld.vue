@@ -124,7 +124,9 @@ export default Vue.extend({
       }
     },
     gotoUrl(url: any) {
-      window.location.href = prepareUrl(url.longUrl);
+      const preparedUrl = prepareUrl(url.longUrl);
+
+      window.open(preparedUrl, '_blanck');
     },
     setIsCustom() {
       this.isCustom = true;
