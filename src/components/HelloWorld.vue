@@ -72,7 +72,7 @@ function prepareUrl(url: string) {
   return u;
 }
 
-const apiUrl = 'http://localhost:3000/urls';
+const apiUrl = 'https://powerful-mesa-76061.herokuapp.com/urls';
 
 export default Vue.extend({
   data() {
