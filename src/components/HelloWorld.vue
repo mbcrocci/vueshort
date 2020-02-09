@@ -14,19 +14,36 @@
           v-model="url"
           v-on:keyup.enter="saveOrGoto"
         />
+        <v-chip v-if="!this.isCustom"
+                class="m-2"
+                x-small
+                outlined
+                v-on:click="setIsCustom">
+          Custom Tag
+        </v-chip>
+        <v-text-field
+          label="Custom ID"
+          placeholder="Myawesomesite"
+          outlined
+          v-model="customTag"
+          v-else
+          v-on:keyup.enter="save"
+          />
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn color="primary" v-on:click="save">Save</v-btn>
-      <v-btn color="primary" v-on:click="goto">Go</v-btn>
+      <v-btn color="primary" @click="save">Save</v-btn>
+      <v-btn color="primary" @click="goto">Go</v-btn>
     </v-card-actions>
-    <v-divider />
     <v-list>
       <template v-for="url in this.urls$">
-        <v-list-item :key="url.shortid">
-          <v-list-item-title v-html="url.shortid"></v-list-item-title>
-          <v-list-item-content v-html="url.longUrl"></v-list-item-content>
-          {{url.longUrl}}
+        <v-divider :key="'spacer' + url.shortid"/>
+        <v-list-item :key="url.shortid"
+                      @click="gotoUrl(url)">
+          <v-list-item-content>
+            <v-list-item-title>{{url.shortid}}</v-list-item-title>
+            <v-list-item-subtitle>{{url.longUrl}}</v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
       </template>
     </v-list>
@@ -37,7 +54,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { timer } from 'rxjs';
-import { switchMap, concatMap, catchError } from 'rxjs/operators';
+import { switchMap, concatMap } from 'rxjs/operators';
 import { fromFetch } from 'rxjs/fetch';
 
 function isUrl(url: string) {
@@ -61,6 +78,8 @@ export default Vue.extend({
   data() {
     return {
       url: '',
+      customTag: '',
+      isCustom: false,
     };
   },
   name: 'HelloWorld',
@@ -75,24 +94,28 @@ export default Vue.extend({
   },
   methods: {
     save() {
+      const urlToSave = {
+        longUrl: this.url,
+
+        ...this.isCustom && { shortid: this.customTag },
+      };
+
+      console.log(urlToSave);
+
       fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          longUrl: this.url,
-        }),
+        body: JSON.stringify(urlToSave),
       })
+        .then(() => { this.isCustom = false; })
         .catch((reason: any) => console.log(reason));
     },
     goto() {
       fetch(`${apiUrl}/${this.url}`)
         .then((resp: Response) => resp.json())
-        .then((data: any) => {
-          const url = prepareUrl(data.longUrl);
-          window.location.href = url;
-        })
+        .then((url: any) => this.gotoUrl(url))
         .catch((reason: any) => console.log(reason));
     },
     saveOrGoto() {
@@ -101,6 +124,12 @@ export default Vue.extend({
       } else {
         this.goto();
       }
+    },
+    gotoUrl(url: any) {
+      window.location.href = prepareUrl(url.longUrl);
+    },
+    setIsCustom() {
+      this.isCustom = true;
     },
   },
 });

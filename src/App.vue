@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="background-image: url('https://cdn.vuetifyjs.com/images/parallax/material2.jpg')">
     <v-content>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
