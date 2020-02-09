@@ -100,8 +100,6 @@ export default Vue.extend({
         ...this.isCustom && { shortid: this.customTag },
       };
 
-      console.log(urlToSave);
-
       fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -110,13 +108,13 @@ export default Vue.extend({
         body: JSON.stringify(urlToSave),
       })
         .then(() => { this.isCustom = false; })
-        .catch((reason: any) => console.log(reason));
+        .catch((reason: any) => reason);
     },
     goto() {
       fetch(`${apiUrl}/${this.url}`)
         .then((resp: Response) => resp.json())
         .then((url: any) => this.gotoUrl(url))
-        .catch((reason: any) => console.log(reason));
+        .catch((reason: any) => reason);
     },
     saveOrGoto() {
       if (isUrl(this.url)) {
